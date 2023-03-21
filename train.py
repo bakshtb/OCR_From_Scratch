@@ -1,6 +1,7 @@
 import random
 import cv2
 import numpy as np
+import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 from keras.utils import pad_sequences
 import keras.backend as K
@@ -102,21 +103,20 @@ model.fit(x=[training_img, train_padded_txt, train_input_length, train_label_len
           validation_data=([valid_img, valid_padded_txt, valid_input_length, valid_label_length],
                            [np.zeros(len(valid_img))]), verbose=1, callbacks=callbacks_list)
 
-
 # test the model
 
 # load the saved best model weights
 act_model.load_weights('best_model.hdf5')
 
 # predict outputs on validation images
-prediction = act_model.predict(valid_img[10:20])
+prediction = act_model.predict(valid_img)
 
 # use CTC decoder
 out = K.get_value(K.ctc_decode(prediction, input_length=np.ones(prediction.shape[0]) * prediction.shape[1],
                                greedy=True)[0][0])
 
 # see the results
-i = 10
+i = 0
 for x in out:
     print("original_text =  ", valid_orig_txt[i])
     print("predicted text = ", end='')
